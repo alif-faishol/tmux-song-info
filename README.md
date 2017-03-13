@@ -1,5 +1,5 @@
 # tmux-song-info
-Display current song name and playback position on tmux status line.
+Display current song name and playback position on tmux status line, only for macOS.
 
 Supported music player:
 * Audirvana Plus
