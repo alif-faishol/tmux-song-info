@@ -1,6 +1,11 @@
 # tmux-song-info
 Display current song name and playback position on tmux status line.
 
+Supported music player:
+* Audirvana Plus
+* iTunes
+* Spotify
+
 Instalation
 -----------
 
