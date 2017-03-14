@@ -1,10 +1,15 @@
 # tmux-song-info
-Display current song name and playback position on tmux status line, only for macOS.
+Display current song name and playback position in tmux status line, only for macOS.
 
 Supported music player:
 * Audirvana Plus
 * iTunes
 * Spotify
+
+Bugs
+-----------
+Can't quit the first priority music player.
+
 
 Instalation
 -----------
