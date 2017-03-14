@@ -15,6 +15,8 @@ Instalation
 
 Download `tmux-song-info.js` and put it in `~/.tmux/tmux-song-info/[here]`.
 
+Edit `~/.tmux/tmux-song-info/tmux-song-info.js`, change Players variable to your preference.
+
 Put this in your `.tmux.conf` :
 ```
 set -g status-right "#(osascript -l JavaScript ~/.tmux/tmux-song-info/tmux-song-info.js)"
