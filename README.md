@@ -9,6 +9,7 @@ Supported music player:
 Bugs
 -----------
 Can't quit music player that's currently sending music info, IF the music player need more time than 1 sec to quit. Quit it twice may do.
+Workaround: change `set -g status-interval` to higher value.
 
 Instalation
 -----------
