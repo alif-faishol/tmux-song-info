@@ -5,6 +5,7 @@ Supported music player:
 * Audirvana Plus
 * iTunes
 * Spotify
+* Swinsian
 
 Bugs
 -----------
