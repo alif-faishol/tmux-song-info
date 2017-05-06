@@ -28,5 +28,5 @@ set -g status-right "#(osascript -l JavaScript ~/.tmux/tmux-song-info/tmux-song-
 set -g status-interval 1
 ```
 
-[ss1]: https://github.com/alif-faishol/tmux-song-info/raw/master/_assets/ss1.png
-[ss2]: https://github.com/alif-faishol/tmux-song-info/raw/master/_assets/ss2.png
+[ss1]: https://github.com/alif-faishol/tmux-song-info/blob/master/screenshot/ss1.png
+[ss2]: https://github.com/alif-faishol/tmux-song-info/blob/master/screenshot/ss2.png
