@@ -7,8 +7,8 @@ Supported music player:
 * Spotify
 * Swinsian
 
-[ss1] []
-[ss2] []
+![ss1] []
+![ss2] []
 
 Bugs
 -----------
