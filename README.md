@@ -7,6 +7,9 @@ Supported music player:
 * Spotify
 * Swinsian
 
+[ss1] []
+[ss2] []
+
 Bugs
 -----------
 Can't quit music player that's currently sending music info, IF the music player need more time than 1 sec to quit. Quit it twice may do.
@@ -24,3 +27,6 @@ Put this in your `.tmux.conf` :
 set -g status-right "#(osascript -l JavaScript ~/.tmux/tmux-song-info/tmux-song-info.js)"
 set -g status-interval 1
 ```
+
+[ss1]: https://github.com/alif-faishol/tmux-song-info/raw/master/_assets/ss1.png
+[ss2]: https://github.com/alif-faishol/tmux-song-info/raw/master/_assets/ss2.png
