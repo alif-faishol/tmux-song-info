@@ -17,9 +17,7 @@ var Players = ['Spotify','Swinsian','iTunes','Audirvana Plus'],
 
 /* ---------------------------------------------------------------- */
 
-var musicPlayer, trackName, artistName, position, duration, state, pause, play;
-
-const musicPlayerVar = (Player) => {
+const musicPlayerVar2 = (Player) => {
   musicPlayer = Application(Player);
   if (Player == "Audirvana Plus") {
     trackName = musicPlayer.playingTrackTitle();
@@ -48,21 +46,52 @@ const musicPlayerVar = (Player) => {
   return true;
 };
 
-const checkSongInfo = (Player) => {
-  if ((state == play) || (state == pause)) {
-    var divider = position / duration;
-    if ((artistName != null) && (artistName.length > 0)) {
-      var output = "♫ " + artistName + " - " + trackName;
+const musicPlayerVar = (Player) => {
+  let musicPlayer = Application(Player);
+  let trackName, artistName, position, duration, state, pause, play;
+  if (Player == "Audirvana Plus") {
+    trackName = musicPlayer.playingTrackTitle();
+    artistName = musicPlayer.playingTrackArtist();
+    position = musicPlayer.playerPosition();
+    duration = musicPlayer.playingTrackDuration();
+    state = musicPlayer.playerState();
+    pause = "Paused";
+    play = "Playing";
+  } else if ((Player == "iTunes") || (Player == "Spotify") || (Player == "Swinsian")) {
+    state = musicPlayer.playerState();
+    pause = "paused";
+    play = "playing";
+    if ((state == play) || (state == pause)) {
+      trackName = musicPlayer.currentTrack.name();
+      artistName = musicPlayer.currentTrack.artist();
+      position = musicPlayer.playerPosition();
+      duration = musicPlayer.currentTrack.duration();
+      if (Player == "Spotify") {
+        duration = duration / 1000;
+      };
+    };
+  } else {
+    return false
+  };
+  return { trackName, artistName, position, duration, state, pause, play };
+};
+
+const checkSongInfo = (x, Player) => {
+  let output, totalChar, progressBar, frontOutput, backOutput;
+  if ((x.state == x.play) || (x.state == x.pause)) {
+    const divider = x.position / x.duration;
+    if ((x.artistName != null) && (x.artistName.length > 0)) {
+      output = "♫ " + x.artistName + " - " + x.trackName;
     } else {
-      var output = "♫ " + trackName;
+      output = "♫ " + x.trackName;
     };
     if (output.length > maxChar) {
-      output =  "♫ " + trackName;
+      output =  "♫ " + x.trackName;
       if (output.length > maxChar) {
         output = output.substring(0,(maxChar - 3)) + "...";
       };
     };
-    if (state == pause) {
+    if (x.state == x.pause) {
       if (output.substring((maxChar - 3),(maxChar)) == "...") {
         output = output.substring(0,(maxChar - 12)) + "... [Paused]";
       } else {
@@ -72,22 +101,22 @@ const checkSongInfo = (Player) => {
         output = output.substring(0,(maxChar - 9)) + " [Paused]";
       };
     };
-    if ((showDuration == true) && (state != pause)) {
+    if ((showDuration == true) && (x.state != x.pause)) {
       const secToText = (time) => {
         const twoDigits = (val) => val.toString().length < 2 ? '0' + val.toString() : val;
-        var hr = Math.floor(time / 3600),
+        let hr = Math.floor(time / 3600),
           min = Math.floor((time - hr * 3600) / 60),
           sec = Math.floor(time - (hr * 3600) - min * 60);
         sec = twoDigits(sec), min = twoDigits(min), hr = twoDigits(hr);
         return time >= 3600 ? hr + ':' + min + ':' + sec : min + ':' + sec ;
       }
       if (showCurPosition == true) {
-        output += ' [' + secToText(position) + '/' + secToText((durationIsRemainingTime ? (duration - position) : duration)) + ']';
+        output += ' [' + secToText(x.position) + '/' + secToText((durationIsRemainingTime ? (x.duration - x.position) : x.duration)) + ']';
       } else {
-        output += ' [' + secToText((durationIsRemainingTime ? (duration - position) : duration)) + ']';
+        output += ' [' + secToText((durationIsRemainingTime ? (x.duration - x.position) : x.duration)) + ']';
       }
     }
-    var totalChar = output.length,
+      totalChar = output.length,
       progressBar = Math.round(divider * totalChar),
       frontOutput = output.substring(0,(progressBar)),
       backOutput = output.substring((progressBar),totalChar);
@@ -98,11 +127,11 @@ const checkSongInfo = (Player) => {
 };
 
 for (i = 0; i < Players.length; i++) {
-  try {
+    try {
     if (Application(Players[i]).running()) {
-      if (musicPlayerVar(Players[i]) == true) {
-        if (!(checkSongInfo(Players[i]) == undefined)) {
-          checkSongInfo(Players[i]);
+      if (musicPlayerVar(Players[i]) != false) {
+        if (!(checkSongInfo(musicPlayerVar(Players[i]),Players[i]) == undefined)) {
+          checkSongInfo(musicPlayerVar(Players[i]),Players[i]);
           break;
         } else {
           "";
@@ -112,6 +141,7 @@ for (i = 0; i < Players.length; i++) {
       };
     };
   } catch (err) {
-    ''
+   ''
   }
 };
+
