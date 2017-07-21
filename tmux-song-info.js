@@ -63,19 +63,20 @@ const songInfo = (maxChar) => (sD) => {
 
 
 const durationInfo = (x=false, y=false) => (data) => {
-  let secToText = (time) => {
-    let twoDigits = (val) => val.toString().length < 2 ? '0' + val.toString() : val
-    let hr = Math.floor(time / 3600),
-      min = Math.floor((time - hr * 3600) / 60),
-      sec = Math.floor(time - (hr * 3600) - min * 60)
-    sec = twoDigits(sec), min = twoDigits(min), hr = twoDigits(hr)
-    return time >= 3600 ? hr + ':' + min + ':' + sec : min + ':' + sec
+  if (data.state == data.play) {
+    let secToText = (time) => {
+      let twoDigits = (val) => val.toString().length < 2 ? '0' + val.toString() : val
+      let hr = Math.floor(time / 3600),
+        min = Math.floor((time - hr * 3600) / 60),
+        sec = Math.floor(time - (hr * 3600) - min * 60)
+      sec = twoDigits(sec), min = twoDigits(min), hr = twoDigits(hr)
+      return time >= 3600 ? hr + ':' + min + ':' + sec : min + ':' + sec
+    }
+    return x === true ? ' [' + secToText(data.position) + '/' + 
+      (secToText((y ? (data.duration - data.position) : data.duration)) + ']')
+      : ' [' + (secToText((y ? (data.duration - data.position) : data.duration)) + ']')
   }
-  if (x === true) {
-    return ' [' + secToText(data.position) + '/' + secToText((y ? (data.duration - data.position) : data.duration)) + ']'
-  } else {
-    return ' [' + secToText((y ? (data.duration - data.position) : data.duration)) + ']'
-  }
+  return ''
 }
 
 const progressBar = (input, frontColor, backColor) => (data) => {
@@ -89,38 +90,19 @@ const progressBar = (input, frontColor, backColor) => (data) => {
 
 const checkSongInfo = (Players, index=0) => {
   if (Application(Players[index]).running()) {
-    let oSongInfo = songInfo(maxChar=30)(songData(Players[index]))
-    let oDurationInfo = durationInfo(showCurPosition, durationIsRemainingTime)(songData(Players[index]))
-    let oProgressBar = (input) => progressBar(input,frontColor,backColor)(songData(Players[index]))
-    // try {
+    try {
+      let oSongInfo = songInfo(maxChar=30)(songData(Players[index]))
+      let oDurationInfo = durationInfo(showCurPosition, durationIsRemainingTime)(songData(Players[index]))
+      let oProgressBar = (input) => progressBar(input,frontColor,backColor)(songData(Players[index]))
       let process = () => oProgressBar(oSongInfo + oDurationInfo)
       let output = () => process().length > 0 ? process() : index < Players.length ? checkSongInfo(Players, index+1) : false
       return Application(Players[index]).running() ? output() : index < Players.length ? checkSongInfo(Players, index+1) : false
-      /* } catch (err) {
+    } catch (err) {
       ''
-    } */
+    }
   } else {
     return checkSongInfo(Players, index+1)
   }
 }
 
 checkSongInfo(Players)
-
-/*
-for (i = 0; i < Players.length; i++) {
-  //try {
-  if (Application(Players[i]).running()) {
-    if (!(songInfo(songData(Players[i])) == undefined)) {
-      progressBar(songInfo(songData(Players[i])) + durationInfo(songData(Players[i]).duration,songData(Players[i]).position,showCurPosition,durationIsRemainingTime),frontColor,backColor)
-      break
-    } else {
-      ""
-    }
-  } else {
-    break
-  }
-  //} catch (err) {
-  //  ''
-  //}
-}
-*/
