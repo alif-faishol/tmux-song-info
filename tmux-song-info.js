@@ -45,9 +45,8 @@ const songData = (Player) => {
   return { trackName, artistName, position, duration, state, pause, play }
 }
 
-const songInfo = (songData, maxChar=30) => {
-  let sD = songData,
-    aN = sD.artistName, tN = sD.trackName, st = sD.state, p = sD.play, s = sD.pause
+const songInfo = (maxChar) => (sD) => {
+  let aN = sD.artistName, tN = sD.trackName, st = sD.state, p = sD.play, s = sD.pause
   let isReady = st == s ? true
     : st == s ? true : false
   let isArtist = () => aN == null ? false
@@ -62,9 +61,10 @@ const songInfo = (songData, maxChar=30) => {
   return st == s ? pauseHandler(output) : output
 }
 
-const durationInfo = (duration, position, x=false, y=false) => {
-  const secToText = (time) => {
-    const twoDigits = (val) => val.toString().length < 2 ? '0' + val.toString() : val
+
+const durationInfo = (x=false, y=false) => (data) => {
+  let secToText = (time) => {
+    let twoDigits = (val) => val.toString().length < 2 ? '0' + val.toString() : val
     let hr = Math.floor(time / 3600),
       min = Math.floor((time - hr * 3600) / 60),
       sec = Math.floor(time - (hr * 3600) - min * 60)
@@ -72,15 +72,15 @@ const durationInfo = (duration, position, x=false, y=false) => {
     return time >= 3600 ? hr + ':' + min + ':' + sec : min + ':' + sec
   }
   if (x === true) {
-    return ' [' + secToText(position) + '/' + secToText((y ? (duration - position) : duration)) + ']'
+    return ' [' + secToText(data.position) + '/' + secToText((y ? (data.duration - data.position) : data.duration)) + ']'
   } else {
-    return ' [' + secToText((y ? (duration - position) : duration)) + ']'
+    return ' [' + secToText((y ? (data.duration - data.position) : data.duration)) + ']'
   }
 }
 
-const progressBar = (input,frontColor,backColor) => {
+const progressBar = (input, frontColor, backColor) => (data) => {
   let totalChar = input.length,
-    divider = songData('Swinsian').position / songData('Swinsian').duration,
+    divider = data.position / data.duration,
     progress = Math.round(divider * totalChar),
     frontOutput = input.substring(0,(progress)),
     backOutput = input.substring((progress),totalChar)
@@ -89,13 +89,16 @@ const progressBar = (input,frontColor,backColor) => {
 
 const checkSongInfo = (Players, index=0) => {
   if (Application(Players[index]).running()) {
-  try {
-  let process = () => progressBar(songInfo(songData(Players[index])) + durationInfo(songData(Players[index]).duration,songData(Players[index]).position,showCurPosition,durationIsRemainingTime),frontColor,backColor)
-  let output = () => process().length > 0 ? process() : index < Players.length ? checkSongInfo(Players, index+1) : false
-  return Application(Players[index]).running() ? output() : index < Players.length ? checkSongInfo(Players, index+1) : false
-  } catch (err) {
-  ''
-  }
+    let oSongInfo = songInfo(maxChar=30)(songData(Players[index]))
+    let oDurationInfo = durationInfo(showCurPosition, durationIsRemainingTime)(songData(Players[index]))
+    let oProgressBar = (input) => progressBar(input,frontColor,backColor)(songData(Players[index]))
+    // try {
+      let process = () => oProgressBar(oSongInfo + oDurationInfo)
+      let output = () => process().length > 0 ? process() : index < Players.length ? checkSongInfo(Players, index+1) : false
+      return Application(Players[index]).running() ? output() : index < Players.length ? checkSongInfo(Players, index+1) : false
+      /* } catch (err) {
+      ''
+    } */
   } else {
     return checkSongInfo(Players, index+1)
   }
@@ -103,7 +106,7 @@ const checkSongInfo = (Players, index=0) => {
 
 checkSongInfo(Players)
 
-  /*
+/*
 for (i = 0; i < Players.length; i++) {
   //try {
   if (Application(Players[i]).running()) {
