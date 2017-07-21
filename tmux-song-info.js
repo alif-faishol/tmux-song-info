@@ -98,7 +98,7 @@ const checkSongInfo = (Players, index=0) => {
       let output = () => process().length > 0 ? process() : index < Players.length ? checkSongInfo(Players, index+1) : false
       return Application(Players[index]).running() ? output() : index < Players.length ? checkSongInfo(Players, index+1) : false
     } catch (err) {
-      ''
+      checkSongInfo(Players, index+1)
     }
   } else {
     return checkSongInfo(Players, index+1)
