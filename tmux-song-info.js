@@ -48,8 +48,11 @@ const songData = (Player) => {
 const songInfo = (songData, maxChar=30) => {
   let sD = songData,
     aN = sD.artistName, tN = sD.trackName, st = sD.state, p = sD.play, s = sD.pause
-  let isReady = st == s ? true : st == s ? true : false
-  let isArtist = () => aN == null ? false : aN.length <= 0 ? false : aN + tN + 5 <= maxChar ? true : false
+  let isReady = st == s ? true
+    : st == s ? true : false
+  let isArtist = () => aN == null ? false
+    : aN.length <= 0 ? false
+    : aN + tN + 5 <= maxChar ? true : false
   let charLimit = (input, limit) => input.substring(0,(limit-3)) + "..."
   let output = isReady = false ? null : isArtist() ? "♫ " + aN + " - " + tN
     : ("♫ " + tN).length <= maxChar ? "♫ " + tN
@@ -75,30 +78,46 @@ const durationInfo = (duration, position, x=false, y=false) => {
   }
 }
 
-const progressBar = (x,y,z) => {
-  let totalChar = x.length,
-    divider = songData('Spotify').position / songData('Spotify').duration,
+const progressBar = (input,frontColor,backColor) => {
+  let totalChar = input.length,
+    divider = songData('Swinsian').position / songData('Swinsian').duration,
     progress = Math.round(divider * totalChar),
-    frontOutput = x.substring(0,(progress)),
-    backOutput = x.substring((progress),totalChar)
-  return y + " " + frontOutput + z + backOutput + " "
+    frontOutput = input.substring(0,(progress)),
+    backOutput = input.substring((progress),totalChar)
+  return frontColor + " " + frontOutput + backColor + backOutput + " "
 }
 
+const checkSongInfo = (Players, index=0) => {
+  if (Application(Players[index]).running()) {
+  try {
+  let process = () => progressBar(songInfo(songData(Players[index])) + durationInfo(songData(Players[index]).duration,songData(Players[index]).position,showCurPosition,durationIsRemainingTime),frontColor,backColor)
+  let output = () => process().length > 0 ? process() : index < Players.length ? checkSongInfo(Players, index+1) : false
+  return Application(Players[index]).running() ? output() : index < Players.length ? checkSongInfo(Players, index+1) : false
+  } catch (err) {
+  ''
+  }
+  } else {
+    return checkSongInfo(Players, index+1)
+  }
+}
+
+checkSongInfo(Players)
+
+  /*
 for (i = 0; i < Players.length; i++) {
   //try {
   if (Application(Players[i]).running()) {
-    if (songData(Players[i]) != false) {
-      if (!(songInfo(songData(Players[i])) == undefined)) {
-        progressBar(songInfo(songData(Players[i])) + durationInfo(songData(Players[i]).duration,songData(Players[i]).position,showCurPosition,durationIsRemainingTime),frontColor,backColor)
-        break
-      } else {
-        ""
-      }
-    } else {
+    if (!(songInfo(songData(Players[i])) == undefined)) {
+      progressBar(songInfo(songData(Players[i])) + durationInfo(songData(Players[i]).duration,songData(Players[i]).position,showCurPosition,durationIsRemainingTime),frontColor,backColor)
       break
+    } else {
+      ""
     }
+  } else {
+    break
   }
   //} catch (err) {
   //  ''
   //}
 }
+*/
