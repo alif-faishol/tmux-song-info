@@ -19,51 +19,44 @@ var Players = ['Spotify','Swinsian','iTunes','Audirvana Plus'],
 
 const songData = (Player) => {
   let mP = Application(Player)
-  let trackName, artistName, state, pause, play, position, duration
+  let trackName, artistName, pause, position, duration
   if (Player == "Audirvana Plus") {
-    trackName = mP.playingTrackTitle()
-    artistName = mP.playingTrackArtist()
-    state = mP.playerState()
-    pause = "Paused"
-    play = "Playing"
-    postion = mP.playerPosition()
-    duration = mP.playingTrackDuration()
-  } else if ((Player == "iTunes") || (Player == "Spotify") || (Player == "Swinsian")) {
-    state = mP.playerState()
-    pause = "paused"
-    play = "playing"
-    if ((state == play) || (state == pause)) {
-      trackName = mP.currentTrack.name()
-      artistName = mP.currentTrack.artist()
-      position = mP.playerPosition()
-      duration = mP.currentTrack.duration()
-      if (Player == "Spotify") {
-        duration = duration / 1000
-      }
+    trackName = mP.playingTrackTitle
+    artistName = mP.playingTrackArtist
+    pause = () => mP.playerState() === "Paused" ? "paused" : mP.playerState() === "Played" ? "played" : false
+    postion = mP.playerPosition
+    duration = mP.playingTrackDuration
+  } else {
+    pause = () => mP.playerState() === "paused" || "played" ? mP.playerState() : false
+    trackName = mP.currentTrack.name
+    artistName = mP.currentTrack.artist
+    position = mP.playerPosition
+    duration = mP.currentTrack.duration
+    if (Player == "Spotify") {
+      duration = () => mP.currentTrack.duration() / 1000
     }
   }
-  return { trackName, artistName, position, duration, state, pause, play }
+  return { trackName, artistName, position, duration, pause }
 }
 
 const songInfo = (maxChar) => (sD) => {
-  let aN = sD.artistName, tN = sD.trackName, st = sD.state, p = sD.play, s = sD.pause
-  let isReady = st == s ? true
-    : st == s ? true : false
+  let aN = sD.artistName(), tN = sD.trackName(), s = sD.pause()
+  let isReady = s ? true : false
   let isArtist = () => aN == null ? false
     : aN.length <= 0 ? false
-    : aN + tN + 5 <= maxChar ? true : false
+    : aN.length + tN.length + 5 <= maxChar ? true : false
   let charLimit = (input, limit) => input.substring(0,(limit-3)) + "..."
   let output = isReady = false ? null : isArtist() ? "♫ " + aN + " - " + tN
     : ("♫ " + tN).length <= maxChar ? "♫ " + tN
     : charLimit("♫ " + tN, maxChar)
   let pauseHandler = (input) => input.length + 9 <= maxChar ? input + " [Paused]"
-    : input.substring(0,(input.length-12)) + "... [Paused]"
-  return st == s ? pauseHandler(output) : output
+    : input.substring(0,(maxChar - 12)) + "... [Paused]"
+  return s == "paused" ? pauseHandler(output) : output
 }
 
 
 const durationInfo = (x=false, y=false) => (data) => {
-  if (data.state == data.play) {
+  if (data.pause() !== "paused") {
     let secToText = (time) => {
       let twoDigits = (val) => val.toString().length < 2 ? '0' + val.toString() : val
       let hr = Math.floor(time / 3600),
@@ -72,16 +65,16 @@ const durationInfo = (x=false, y=false) => (data) => {
       sec = twoDigits(sec), min = twoDigits(min), hr = twoDigits(hr)
       return time >= 3600 ? hr + ':' + min + ':' + sec : min + ':' + sec
     }
-    return x === true ? ' [' + secToText(data.position) + '/' + 
-      (secToText((y ? (data.duration - data.position) : data.duration)) + ']')
-      : ' [' + (secToText((y ? (data.duration - data.position) : data.duration)) + ']')
+    return x === true ? ' [' + secToText(data.position()) + '/' + 
+      (secToText((y ? (data.duration() - data.position()) : data.duration())) + ']')
+      : ' [' + (secToText((y ? (data.duration() - data.position()) : data.duration())) + ']')
   }
   return ''
 }
 
 const progressBar = (input, frontColor, backColor) => (data) => {
   let totalChar = input.length,
-    divider = data.position / data.duration,
+    divider = data.position() / data.duration(),
     progress = Math.round(divider * totalChar),
     frontOutput = input.substring(0,(progress)),
     backOutput = input.substring((progress),totalChar)
@@ -98,7 +91,7 @@ const checkSongInfo = (Players, index=0) => {
       let output = () => process().length > 0 ? process() : index < Players.length ? checkSongInfo(Players, index+1) : false
       return Application(Players[index]).running() ? output() : index < Players.length ? checkSongInfo(Players, index+1) : false
     } catch (err) {
-      checkSongInfo(Players, index+1)
+      console.log(err)
     }
   } else {
     return checkSongInfo(Players, index+1)
